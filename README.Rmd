@@ -4,13 +4,14 @@ author: "Julius Rissanen"
 date: "Tuesday, January 24, 2017"
 output: html_document
 ---
-#write something about the course =)
+
 
 #YAY open data science.
 
-##link to the course diary
-github:
-#https://github.com/JuliusRissanen/IODS-project#
+
+#github:
+
+https://github.com/JuliusRissanen/IODS-project
 
 #webpage:
 https://juliusrissanen.github.io/IODS-project/
