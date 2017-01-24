@@ -9,4 +9,8 @@ output: html_document
 #YAY open data science.
 
 ##link to the course diary
+github:
 #https://github.com/JuliusRissanen/IODS-project#
+
+webpage:
+https://juliusrissanen.github.io/IODS-project/
