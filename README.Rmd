@@ -1,0 +1,12 @@
+---
+title: "README"
+author: "Julius Rissanen"
+date: "Tuesday, January 24, 2017"
+output: html_document
+---
+#write something about the course =)
+
+#YAY open data science.
+
+##link to the course diary
+#https://github.com/JuliusRissanen/IODS-project#
