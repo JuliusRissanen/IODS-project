@@ -6,4 +6,4 @@
 "https://github.com/JuliusRissanen/IODS-project"
 
 #Github webpage
-"https://juliusrissanen.github.io/IODS-project/#insert-chapter-2-title-here"
+"https://juliusrissanen.github.io/IODS-project/
