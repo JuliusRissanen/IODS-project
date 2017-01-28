@@ -6,12 +6,14 @@ output: html_document
 ---
 
 
-#YAY open data science.
+###My thoughts about the course:
+
+"YAY open data science.!"
 
 
-#github:
+##github:
 
 https://github.com/JuliusRissanen/IODS-project
 
-#webpage:
+##webpage:
 https://juliusrissanen.github.io/IODS-project/
