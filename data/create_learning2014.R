@@ -9,7 +9,7 @@ fullLearning2014 <- read.csv(internetAddress, sep = "\t", header = T)
 str(fullLearning2014)
 
 #install needed packages by uncommenting lower line
-#install.packages("dplyr")
+#install.packages("dplyr") 
 
 #call needed libraries
 library(dplyr)

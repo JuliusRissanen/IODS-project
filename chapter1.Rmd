@@ -1,9 +1,9 @@
 
-# About the project
-"Looking forward to open data science course, sounds interesting.=)"
+### About the project
+Looking forward to open data science course, sounds like an interesting one =)
 
-#Github repository
+###Github repository
 "https://github.com/JuliusRissanen/IODS-project"
 
-#Github webpage
+###Github webpage
 "https://juliusrissanen.github.io/IODS-project/
