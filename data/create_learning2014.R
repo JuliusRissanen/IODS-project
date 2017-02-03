@@ -2,11 +2,18 @@
 #store internet address to variable
 internetAddress <- "http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt"
 
-#load data, it actually has tab separedt values so that is taken into account
+#load data, it actually has tab separated values so that is taken into account
 fullLearning2014 <- read.csv(internetAddress, sep = "\t", header = T)
 
 #check structure and that everything is fine
 str(fullLearning2014)
+dim(fullLearning2014)
+
+#Dimensions are 183 and 60 which means 60 variables with 183
+#rows (persons)
+
+#All variables are int (numbers) except for gender which is 
+# 2 level factor for males ("M")and females ("F")
 
 #install needed packages by uncommenting lower line
 #install.packages("dplyr") 
@@ -41,6 +48,11 @@ learning2014$surf <- rowMeans(surface_columns)
 stra_columns <- select(fullLearning2014, one_of(strategic_questions))
 learning2014$stra <- rowMeans(stra_columns)
 
+#adjust Attitude by scaling with number of questions
+#also checked to be correct with dataset provided by course TA's
+learning2014$Attitude <- learning2014$Attitude / 10
+
+
 #delete everyone with 0 in points variable
 learning2014 <- filter(learning2014, Points > 0)
 
@@ -60,4 +72,6 @@ write.csv(learning2014, file = "data/learning2014")
 # thus 'row.names = 1'
 readTestLearning2014 <- read.csv(file = "data/learning2014", row.names = 1)
 str(readTestLearning2014)
-summary(readTestLearning2014)
+head(readTestLearning2014)
+
+#everything's correct
