@@ -1,0 +1,191 @@
+---
+title: "Chapter4"
+author: "Julius Rissanen"
+date: "17 helmikuuta 2017"
+output: html_document
+---
+#CHAPTER 4 CLUSTERING AND CLASSIFICATION
+
+```{r, message=FALSE}
+#this week's needed packages
+library(MASS)
+library(dplyr)
+library(GGally)
+library(ggplot2)
+library(tidyr)
+library(corrplot)
+library(plotly)
+```
+
+For this week we will be using 'Boston' dataset from the 'MASS' R package it includes 14 variables with 506 observations. Variables include:
+
+1. per capita crime rate by town.
+2. proportion of residential land zoned for lots over 25,000 sq.ft.
+3. proportion of non-retail business acres per town.
+4. Charles River dummy variable (= 1 if tract bounds river; 0 otherwise).
+5. nitrogen oxides concentration (parts per 10 million).
+6. average number of rooms per dwelling.
+7. proportion of owner-occupied units built prior to 1940.
+8. weighted mean of distances to five Boston employment centres.
+9. index of accessibility to radial highways.
+10. full-value property-tax rate per \$10,000.
+11. pupil-teacher ratio by town.
+12. 1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town.
+13. lower status of the population (percent).
+14. median value of owner-occupied homes in \$1000s. 
+
+```{r, message=FALSE}
+data("Boston")
+glimpse(Boston)
+```
+
+Next we look at the distributions and descriptive statistics of the Boston dataset.
+```{r, message= FALSE}
+gather(Boston) %>% 
+  ggplot(aes(value)) + facet_wrap("key", scales= "free") + geom_histogram() + theme_bw()
+```
+
+```{r}
+summary(Boston)
+```
+From the distributions we can see that only normally distributed variable is the number of rooms per dwelling (rm). Also Charles River (chas) variable is dummy variable for adjacency of the river. Proportion of the blacks (black) is heavily skewed to the right and crime rate heavily skewed to the left. Zn, tax, indus and ptratio all have some values which are heavily weighted. For example 0 in zn and 18.1 in indus.
+
+
+```{r}
+Boston.corr <- cor(Boston)
+corrplot(Boston.corr, type="upper", order = "AOE" ,method = "shade", addCoef.col = T, number.cex = 0.7)
+```
+
+Strongest negative correlations are between lstat and zn, dis and indus, dis and age, dis and nox. Most positively correlated were between Indus, age, rad, tax and crime. The graph is fortunately self explanatory for further assesment.
+
+Next we need to scale the Boston dataset for the use of LDA and convert it back to dataframe
+```{r}
+Boston.scaled <- scale(Boston)
+summary(Boston.scaled)
+Boston.scaled <- as.data.frame(Boston.scaled)
+```
+
+```{r}
+#crim variable to quantiles
+crim.scaled <- Boston.scaled$crim
+quantiles <- quantile(crim.scaled)
+
+#quantile names
+quantile.names <- c("low", "med_low", "med_high", "high")
+
+# cut crime from original to new quantiles
+crime.quantile <- cut(crim.scaled, breaks = quantiles, include.lowest = T, label = quantile.names)  
+
+Boston.scaled <- select(Boston.scaled, -crim)
+Boston.scaled <- cbind(Boston.scaled, crime.quantile)
+
+```
+Next we break the data into test and training dataset
+```{r}
+n <- nrow(Boston.scaled)
+
+#choose 80%
+ind <- sample(n,  size = n * 0.8)
+
+#training set
+train <- Boston.scaled[ind,]
+
+#test set 
+test <- Boston.scaled[-ind,]
+
+# save classes from test data to a  independent variable
+correct_classes <- test$crime.quantile
+
+# remove crime from test
+test <- dplyr::select(test, -crime.quantile)
+```
+
+Next we fit LDA to our training data. using crime.quantiles as target variable and other's as predictors.
+
+```{r}
+lda.fit <- lda(crime.quantile ~ ., data=train)
+lda.fit
+```
+
+Next we draw the LDA (bi)plot to visualize the previous results from fitting the LDA.
+
+```{r, message = FALSE}
+lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "red", tex = 0.75, choices = c(1,2)){
+  heads <- coef(x)
+  arrows(x0 = 0, y0 = 0, 
+         x1 = myscale * heads[,choices[1]], 
+         y1 = myscale * heads[,choices[2]], col=color, length = arrow_heads)
+  text(myscale * heads[,choices], labels = row.names(heads), 
+       cex = tex, col=color, pos=3)
+}
+
+# target needs to be numeric
+classes <- as.numeric(train$crime)
+
+# plot
+plot(lda.fit, dimen = 2, col = classes, pch = classes)
+lda.arrows(lda.fit, myscale = 2)
+```
+
+From the picture can be seen that LD1 is good at separating high crime and then LD2 (up down) can further separate other 3 lower crime rates.
+
+But next we see how well we can predict the classes
+```{r}
+lda.pred <- predict(lda.fit, newdata = test)
+
+table(correct = correct_classes, predicted = lda.pred$class)
+```
+
+We can see that the model can very well predict high crime rates (only 1 instance wrong). Lower crime rates have much more confusion. For example 'Low' had more misclassifications than real ones (10 true, 12 false; 11 classified as med_low and 1 as med_high). 
+
+Next we move on to utilising k-means with Boston dataset
+```{r}
+data('Boston')
+
+#clustering works only on scaled data
+Boston.scaled2 <- scale(Boston)
+set.seed(123)
+
+#we need distance matrix for clustering
+Boston.distance <- dist(Boston.scaled2)
+
+#maximum number of hypothetical clusters
+
+k_max <- 10
+
+# total within sum of squares
+twsq <- sapply(1:k_max, function(k){kmeans(Boston.distance, k)$tot.withinss})
+
+plot(1:k_max, twsq, type = "b")
+```
+
+Inteptreting the graph looks like optimum number of clusters is 2 (has the sharpest drop in the within cluster variation). So next we run the kmeans for 2 clusters.
+
+```{r}
+boston.kmeans2 <- kmeans(Boston.distance, centers = 2)
+
+#plot the dataset
+pairs(Boston, col = boston.kmeans2$cluster)
+```
+From the graph we can see that rad and tax were most important separators for the clusters
+
+
+###BONUS1:
+I perform LDA using kmeans with 3 cluster centers.
+
+```{r}
+#kmeans with 3 clusters on Boston dataset
+boston.kmeans3 <- kmeans(Boston.distance, centers = 3)
+
+#LDA on the previous kmeans results
+lda.fit <- lda(boston.kmeans3$cluster ~ ., data = Boston)
+lda.fit
+
+#plot the previous lda
+plot(lda.fit, dimen = 2, col = boston.kmeans3$cluster, pch = boston.kmeans3$cluster)
+lda.arrows(lda.fit, myscale = 2)
+```
+
+From plotting the (bi)plot it can be seen that LD1 separates variables very well. Nox and Chas were the best ones.
+
+
