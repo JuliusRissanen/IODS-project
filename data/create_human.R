@@ -64,3 +64,48 @@ setwd("C:/Users//Julius//yliopisto//kansis//datascience//IODS-project")
 getwd()
 
 write.csv(human, file = "data/human")
+
+
+
+#Chapter 5 continuation
+
+library(stringr)
+
+
+# GNI to numeric
+human$gni <- str_replace(human$gni, pattern=",", replace ="") %>% as.numeric() 
+
+    
+# defining a subset of variables that would be used in later analyses
+keep <- c("country", "eduF2M", "labourF2m", "eduexpect", "lifexpect", "gni", "mortality", "adole_birth", "parlia_represent")
+
+# keep only variables defined above 
+human <- select(human, one_of(keep))
+str(human)
+
+# filter that we include only complete.cases
+human_ <- filter(human, complete.cases(human) == TRUE)
+
+#which are regions?
+human_$country
+#->last 7 are regions
+
+# remove regions
+last <- nrow(human_) - 7
+human_ <- human_[1:last, ]
+
+# rownames as countrynames and remove country variable
+rownames(human_) <- human_$country
+human_ <- select(human_, -country)
+
+# check rows and variables
+dim(human_)
+str(human_)
+head(human_)
+
+
+write.csv(human_, "data/human.csv", row.names = TRUE)
+human_test<- read.csv("data/human.csv", header = TRUE, row.names = 1)
+dim(human_test)
+head(human_test)
+str(human_test)

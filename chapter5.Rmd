@@ -1,0 +1,102 @@
+---
+title: "chapter5"
+author: "Julius Rissanen"
+date: "24 helmikuuta 2017"
+output: html_document
+---
+
+#CHAPTER5 DIMENSIONALITY REDUCTION TECHNIQUES
+
+```{r, message= F}
+#needed libraries
+library(GGally)
+library(FactoMineR)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+```
+
+First we start by downloading the 'human' dataset from the data wrangling part and do basic descriptive statistics
+
+```{r}
+human <- read.csv("data/human.csv", row.names = 1)
+dim(human)
+str(human)
+colnames(human)
+```
+Our dataset has 155 countries and 8 variables for each of them. The data has no missing values because countries with them were cleaned in the earlier data wrangling part. Our variables describe characteristics in education, health, economy, political activity and gender equality
+
+Next we do some graphical exploratory analysis
+
+```{r}
+ggpairs(human)
+```
+Variables for education gender ratio, labour gender ratio, expected education and female percentage in parliament were all normally distributed. GNI, maternal mortality and adolescent birth rates were negatively skewed.
+
+There also exist high negative correlations between adolescent birth rate, expected education duration, life expectancy and maternal mortality
+
+
+High positive correlations were found between life expectancy, gni, education gender gap and education expectancy. Also adolescent birth rate and labour gender parity were highly positively correlated.
+
+Next we do principal component analysis without scaling our variables
+
+```{r, message = F, error= F}
+pca_human <- prcomp(human)
+summary(pca_human)
+biplot(pca_human, choices = 1:2, cex = c(0.8,1))
+```
+Using non-standardized data confirms the notion that it's not advisable to use non-standardized data with pca. Huge differences in variable scales makes all the proportions of variance explained by each principal component minimal (after the first one). Biplot visualises the same thing by showing that GNI is the main (only) driver in variance.
+
+Next we scale the data and repeat the procedure
+```{r}
+human_scaled <- scale(human)
+pca_human_scaled <- prcomp(human_scaled)
+summary(pca_human_scaled)
+biplot(pca_human_scaled, choices = 1:2, cex = c(0.5,0.8), col = c("grey", "blue"), xlim  = c(-0.25, 0.25), ylim  = c(-0.25, 0.25))
+```
+
+Above results can be intepreted as that first principal component explains 53.6% of the variance, 2nd 16.2% and 3rd 9.6%.
+
+Biplot reveals that first principal component consists mostly of expected education duration, education gender gap, GNI, life expectancy, child mortality and adolescent birth rate. 
+
+2nd principal component consists of labour gender equality and women represented in parliament
+
+General explanations for principal components could be seen as:
+1st PC could be viewed as human development and 2nd one as governmental and labour gender equality.
+
+
+Tea time!
+
+Exploratory and descriptive data analysis:
+
+```{r}
+data("tea")
+dim(tea)
+colnames(tea)
+```
+To make it simple we take subset of data consisting of 6 variables
+1. sex
+2. tea.time
+3. healthy
+4. price
+5. iron.absorption
+6. spirituality
+```{r}
+#variables which we keep
+keep_variables <- c("sex", "tea.time", "healthy", "price", "iron.absorption", "spirituality")
+tea_6 <- select(tea, one_of(keep_variables))
+
+gather(tea_6) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar() + theme_bw()
+```
+
+Our final dataset includes 6 variables for 300 persons. Only price variable is multilevel, other's were binary. Variable graph is fortunately self explanatory for visualisation in this small dataset.
+
+Next we run multiple correspondence analysis (MCA). With MCA we can analyze categorical variables compared to PCA which works only with continuos variables.
+
+```{r}
+mca <- MCA(tea_6, graph = FALSE)
+summary(mca)
+plot(mca, invisible = c("ind"), habillage = c("quali"))
+```
+
+Variables don't load really smoothly on the dimensions. Reason could be that I accidentally tried to choose different kind of variables. Dimension 1 makes the most clear difference for sex (65% eta value) and tea.time (44%). 2nd dimension looks to be mostly about healthiness and price.
