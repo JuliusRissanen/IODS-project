@@ -24,6 +24,7 @@ dim(human)
 str(human)
 colnames(human)
 ```
+
 Our dataset has 155 countries and 8 variables for each of them. The data has no missing values because countries with them were cleaned in the earlier data wrangling part. Our variables describe characteristics in education, health, economy, political activity and gender equality
 
 Next we do some graphical exploratory analysis
@@ -31,6 +32,7 @@ Next we do some graphical exploratory analysis
 ```{r}
 ggpairs(human)
 ```
+
 Variables for education gender ratio, labour gender ratio, expected education and female percentage in parliament were all normally distributed. GNI, maternal mortality and adolescent birth rates were negatively skewed.
 
 There also exist high negative correlations between adolescent birth rate, expected education duration, life expectancy and maternal mortality
@@ -45,6 +47,7 @@ pca_human <- prcomp(human)
 summary(pca_human)
 biplot(pca_human, choices = 1:2, cex = c(0.8,1))
 ```
+
 Using non-standardized data confirms the notion that it's not advisable to use non-standardized data with pca. Huge differences in variable scales makes all the proportions of variance explained by each principal component minimal (after the first one). Biplot visualises the same thing by showing that GNI is the main (only) driver in variance.
 
 Next we scale the data and repeat the procedure
@@ -74,13 +77,16 @@ data("tea")
 dim(tea)
 colnames(tea)
 ```
+
 To make it simple we take subset of data consisting of 6 variables
+
 1. sex
 2. tea.time
 3. healthy
 4. price
 5. iron.absorption
 6. spirituality
+
 ```{r}
 #variables which we keep
 keep_variables <- c("sex", "tea.time", "healthy", "price", "iron.absorption", "spirituality")
