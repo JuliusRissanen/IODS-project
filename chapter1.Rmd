@@ -1,6 +1,7 @@
+#Chapter1: Preparation
 
 ### About the project
-Looking forward to open data science course, sounds like an interesting one =)
+This webpage is "lecture diary" for the course Introduction open data science by Uni Helsinki.
 
 ###Github repository
 "https://github.com/JuliusRissanen/IODS-project"

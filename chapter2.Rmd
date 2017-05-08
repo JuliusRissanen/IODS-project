@@ -1,8 +1,8 @@
-# Chapter2 Analysis part
+#Chapter2: Linear regression 
 
-##1
 
-###reading the data from the local folder
+
+###Reading the data from the local folder
 
 ```{r reading the data}
 setwd("C:/Users//Julius//yliopisto//kansis//datascience//IODS-project")
@@ -10,16 +10,16 @@ learning2014 <- read.csv(file ="data/learning2014", row.names = 1)
 dim(learning2014)
 str(learning2014)
 ```
-Dataset has 166 observations (persons) with 7 variables (gender, points, Attitude, Age, deep, surf and stra). Gender is only factor and it has 2 levels males ("M") and females ("F"). Points and Age are numerical so they are whole numbers so no decimals and rest are integers.
+Dataset has 166 observations (persons) with 7 variables (gender, points, Attitude, Age, deep, surf and stra). Gender is only factor and it has 2 levels males ("M") and females ("F"). Points and Age are numerical so they are whole numbers without decimals and rest are integers.
 
-##2
+
 
 ###Exploratory data analysis
 
 ```{r}
 summary(learning2014)
 ```
-Youngest person is 17 and oldest 55 with mean being 25.51. Data is female dominated with them 110 females compared to 56 males. Minimum points is 7 and max 33 with mean being 22.72. All the questionnaire variables: attitude, deep, surf and stra have almost covered whole range from low (1) to high (5) by person's answers. 
+Youngest person is 17 and oldest 55 with mean 25.51. Data is female dominated with 110 females compared to 56 males. Minimum points is 7 and max 33 with mean 22.72. All the questionnaire variables: attitude, deep, surf and stra have almost covered whole range from low (1) to high (5) by person's answers.
 
 ```{r exploratory data analysis, warning = FALSE, message = FALSE, error = FALSE}
 
@@ -33,38 +33,40 @@ ggpairs(learning2014)
 ```
 
 
-Most normally distributed variables are attitude, surf and stra. Points and deep show some skewness to the right and Age is heavily left skewed. None of the variables are highly correlated. Best one being points and attitude at -0.437. Generally correlations lie somewhere in between ~-0.15 and ~0.15
+Most normally distributed variables are 'attitude', 'surf' and 'stra'. 'Points' and 'deep' show some skewness to the right and 'Age' is heavily left skewed. None of the variables are highly correlated. Best one being 'points' and 'attitude' at -0.437. Generally correlations lay somewhere in between ~-0.15 and ~0.15
 
-##3
 
-###fitting Linear model
+###Fitting Linear model
 
 ```{r}
 fit.model1 <- lm(data = learning2014, Points ~ Attitude + deep + stra)
 summary(fit.model1)
 ```
-Deep has p-value of 0.215 which is not statistically significantly different from zero. Also stra has 0.0698 p-value which is not statistically significantly different from zero. So we delete both from the model and fit it again with only attitude
+Deep has p-value of 0.215 which is not statistically significantly different from zero. Also stra has 0.0698 p-value which is not statistically significantly different from zero. According to exercise instructions we delete both from the model and fit it again with only attitude
 
 ```{r}
 fit.model2 <- lm(data=learning2014, Points ~ Attitude)
 summary(fit.model2)
 ```
 
-##4
-
-###intepreting the lm model
-
-The fitted model gives coefficient of 3.5255 for the attitude which means that for every one unit of increase in attitude the persons have had 3.5255 increase in their points. This is statistically significantly different from zero with p-value of "4.12e-09". R-squared (also known as coefficient of determination) shows that how much our model explains of the variance in dependent variable. In this case around 19%.
 
 
-##5
+###Intepreting the lm model
+
+The fitted model gives coefficient of 3.5255 for the attitude which means that for every one unit of increase in attitude the persons have had 3.5255 increase in their points. This is statistically significantly different from zero with p-value of "4.12e-09". R-squared (also known as coefficient of determination) shows how much our model explains of the variance in dependent variable: in this case around 19%.
+
+
 
 ###Checking the validity of the linear regression assumptions
 
 Linear regression's assumptions are:
+
 1. errors are normally distributed
+
 2. errors are not correlated
+
 3. errors have constant variance
+
 4. size of given errors does not depend on the explanatory variables
 
 

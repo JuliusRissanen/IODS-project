@@ -4,7 +4,7 @@ author: "Julius Rissanen"
 date: "17 helmikuuta 2017"
 output: html_document
 ---
-#CHAPTER 4 CLUSTERING AND CLASSIFICATION
+#Chapter4: Clustering and Classification techniques
 
 ```{r, message=FALSE}
 #this week's needed packages
@@ -17,7 +17,7 @@ library(corrplot)
 library(plotly)
 ```
 
-For this week we will be using 'Boston' dataset from the 'MASS' R package it includes 14 variables with 506 observations. Variables include:
+For this week we will be using 'Boston' dataset from the 'MASS' R package which includes 14 variables with 506 observations. Variables include:
 
 1. per capita crime rate by town.
 2. proportion of residential land zoned for lots over 25,000 sq.ft.
@@ -39,7 +39,7 @@ data("Boston")
 glimpse(Boston)
 ```
 
-Next we look at the distributions and descriptive statistics of the Boston dataset.
+Next we look at the distributions and descriptive statistics for the Boston dataset.
 ```{r, message= FALSE}
 gather(Boston) %>% 
   ggplot(aes(value)) + facet_wrap("key", scales= "free") + geom_histogram() + theme_bw()
@@ -48,7 +48,7 @@ gather(Boston) %>%
 ```{r}
 summary(Boston)
 ```
-From the distributions we can see that only normally distributed variable is the number of rooms per dwelling (rm). Also Charles River (chas) variable is dummy variable for adjacency of the river. Proportion of the blacks (black) is heavily skewed to the right and crime rate heavily skewed to the left. Zn, tax, indus and ptratio all have some values which are heavily weighted. For example 0 in zn and 18.1 in indus.
+From the distributions we can see that only normally distributed variable is the number of rooms per dwelling (rm). Charles River (chas) is dummy variable for adjacency of the river. Proportion of the blacks (black) is heavily skewed to the right and crime rate heavily skewed to the left. Zn, tax, indus and ptratio all have some values which are heavily weighted: for example 0 in zn and 18.1 in indus.
 
 
 ```{r}
@@ -56,7 +56,7 @@ Boston.corr <- cor(Boston)
 corrplot(Boston.corr, type="upper", order = "AOE" ,method = "shade", addCoef.col = T, number.cex = 0.7)
 ```
 
-Strongest negative correlations are between lstat and zn, dis and indus, dis and age, dis and nox. Most positively correlated were between Indus, age, rad, tax and crime. The graph is fortunately self explanatory for further assesment.
+Strongest negative correlations are between lstat and zn, dis and indus, dis and age, dis and nox. Most positively correlated were between Indus, age, rad, tax and crime. The graph is fortunately self-explanatory for further assesment.
 
 Next we need to scale the Boston dataset for the use of LDA and convert it back to dataframe
 ```{r}
@@ -100,7 +100,7 @@ correct_classes <- test$crime.quantile
 test <- dplyr::select(test, -crime.quantile)
 ```
 
-Next we fit LDA to our training data. using crime.quantiles as target variable and other's as predictors.
+Next we fit LDA to our training data using crime.quantiles as target variable and rest of the variables as predictors.
 
 ```{r}
 lda.fit <- lda(crime.quantile ~ ., data=train)
@@ -186,6 +186,6 @@ plot(lda.fit, dimen = 2, col = boston.kmeans3$cluster, pch = boston.kmeans3$clus
 lda.arrows(lda.fit, myscale = 2)
 ```
 
-From plotting the (bi)plot it can be seen that LD1 separates variables very well. Nox and Chas were the best ones.
+From plotting the (bi)plot it can be seen that LD1 separates variables very well. Nox and Chas variables were the most influential ones in providing information for separation.
 
 
